@@ -1,0 +1,10 @@
+streamlit
+speechrecognition
+pyttsx3
+wikipedia
+requests
+geocoder
+opencv-python
+pypiwin32
+python-pptx
+psutil
