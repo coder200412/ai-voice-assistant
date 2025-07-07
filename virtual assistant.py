@@ -12,12 +12,11 @@ import json
 import geocoder
 import os
 import psutil
-from pptx import Presentation
-from pptx.util import Inches
 import pyautogui
 import cv2
 from collections import defaultdict
 from io import StringIO
+from geopy.geocoders import Nominatim
 
 
 def speak(text):
@@ -156,21 +155,45 @@ def gather_data():
     
     print("Gathering data...")
 
-def get_weather(city):
-    api_key = 'xxxxxxxxx'
-    base_url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid=ccb23b78c0aafcab3d66f0ca81ea949a&units=metric'
+def get_coordinates():
     try:
-        response = requests.get(base_url)
-        weather_data = response.json()
-        if weather_data['cod'] == '404':
-            speak('City not found. Please try again.')
+        location = geocoder.ip('me')
+        if location.ok:
+            return location.latlng  
         else:
-            temperature = weather_data['main']['temp']
-            description = weather_data['weather'][0]['description']
-            speak(f'The current temperature in {city} is {temperature} degrees Celsius with {description}.')
+            speak("Unable to determine your coordinates.")
+            return None
     except Exception as e:
-        print(f'Error fetching weather data: {e}')
-        speak('Sorry, I encountered an error while fetching the weather.')
+        print(f"Error getting coordinates: {e}")
+        return None
+
+
+
+
+def get_weather_by_coords(city_name):
+    try:
+        geolocator = Nominatim(user_agent="jarvis-weather")
+        location = geolocator.geocode(city_name)
+        if location:
+            lat, lon = location.latitude, location.longitude
+            api_key = "xxxxxxxxxxxxx"
+            url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+            response = requests.get(url)
+            weather_data = response.json()
+            
+            if weather_data.get("cod") == 200:
+                temp = weather_data["main"]["temp"]
+                description = weather_data["weather"][0]["description"]
+                city = weather_data.get("name", city_name)
+                speak(f"The current temperature in {city} is {temp}°C with {description}.")
+            else:
+                speak("Weather data not found.")
+        else:
+            speak("City not found.")
+    except Exception as e:
+        print(f"Error in get_weather_by_coords: {e}")
+        speak("Sorry, there was an error fetching the weather.")
+
 
 def get_current_city():
     try:
@@ -184,7 +207,7 @@ def get_current_location_weather():
     current_city = get_current_city()
     if current_city:
         speak(f"Checking the weather in {current_city}.")
-        get_weather(current_city)
+        get_weather_by_coords(current_city)
     else:
         speak("Unable to determine the current location. Please try again later.")
 
@@ -199,7 +222,7 @@ def change_location(cities):
     new_location = listen()
     if new_location in cities:
         speak(f"Changing location to {new_location}.")
-        get_weather(new_location)
+        get_weather_by_coords(new_location)
     else:
         speak("Sorry, I don't have weather information for that city.")
 
@@ -213,6 +236,8 @@ def main():
     while True:
         command = listen()
         if command is not None:
+            command = command.lower()
+
             if "open chrome" in command:
                 open_chrome()
             elif "close chrome" in command:
@@ -225,7 +250,6 @@ def main():
                 open_youtube()
             elif "close youtube" in command:
                 close_youtube()
-           
             elif "open whatsapp" in command:
                 open_whatsapp()
             elif "close whatsapp" in command:
@@ -238,7 +262,6 @@ def main():
                 open_file_explorer()
             elif "open settings" in command:
                 open_settings()
-            
             elif "turn on bluetooth" in command:
                 turn_on_bluetooth()
             elif "turn off bluetooth" in command:
@@ -249,6 +272,12 @@ def main():
                 turn_off_wifi()
             elif "check weather" in command:
                 get_current_location_weather()
+            elif "weather in" in command:
+                city = command.split("weather in")[-1].strip()
+                if city:
+                    get_weather_by_coords(city)
+                else:
+                    speak("Please say the city name clearly.")
             elif "change location" in command:
                 change_location(["City1", "City2"])
             elif "add city" in command:
