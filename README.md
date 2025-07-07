@@ -8,6 +8,7 @@ This project is a simple voice-controlled assistant inspired by Jarvis. It suppo
 - Commands to control apps like Chrome, Firefox, YouTube, WhatsApp, 
 - System features like Bluetooth/Wi-Fi toggle, file explorer, email
 - Weather updates by location
+  
 
 
 ## 📂 Folder Structure
