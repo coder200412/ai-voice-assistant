@@ -62,16 +62,7 @@ def close_browser(browser):
 def close_youtube():
     close_browser("chrome")
 
-def open_genshin():
-    subprocess.Popen([r"C:\\Users\\Rahul\\Downloads\\GenshinImpact_install_ua_9a50d7c973b8.exe"])
 
-def close_genshin_impact():
-    system = platform.system().lower()
-    if system == "windows":
-        subprocess.run(["taskkill", "/f", "/im", "launcher.exe"])
-    elif system == "darwin" or system == "linux":
-        subprocess.run(["pkill", "launcher.exe"])
-    time.sleep(3)
 
 def open_whatsapp():
     webbrowser.open("https://web.whatsapp.com/")
@@ -101,24 +92,7 @@ def open_file_explorer():
 def open_settings():
     subprocess.Popen(["control.exe", "control"])
 
-def open_cisco_packet_tracer():
-    subprocess.Popen([r"C:\\Users\\Rahul\\OneDrive\\Desktop\\Cisco Packet Tracer.lnk"])
 
-def close_cisco_packet_tracer():
-    system = platform.system().lower()
-    if system == "windows":
-        for process in psutil.process_iter(['pid', 'name']):
-            try:
-                if 'PacketTracer7' in process.info['name']:
-                    pid = process.info['pid']
-                    psutil.Process(pid).terminate()
-                    speak("Cisco Packet Tracer has been closed.")
-                    return
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
-        speak("Cisco Packet Tracer is not currently running.")
-    else:
-        speak("Closing Cisco Packet Tracer is not supported on this operating system.")
 
 def turn_on_bluetooth():
     subprocess.run(["powershell", "Enable-Bluetooth"])
@@ -127,9 +101,9 @@ def turn_off_bluetooth():
     subprocess.run(["powershell", "Disable-Bluetooth"])
 
 def connect_wifi():
-    ssid = "VITAP-HOSTEL"
-    username = "22bce7942"
-    password = "Cal@123"
+    ssid = "xxxx"
+    username = "xxxx"
+    password = "xxxx"
     try:
         speak(f"Connecting to Wi-Fi network {ssid}.")
         subprocess.run(["netsh", "wlan", "connect", "name", ssid], check=True, capture_output=True)
@@ -174,16 +148,16 @@ def execute_command(command):
 
 def open_application(app_name):
     try:
-        os.system(f"start {app_name}.exe")  # Adjust based on your operating system
+        os.system(f"start {app_name}.exe") 
     except Exception as e:
         print(f"Error opening application: {e}")
 
 def gather_data():
-    # Add your data gathering code here
+    
     print("Gathering data...")
 
 def get_weather(city):
-    api_key = 'ccb23b78c0aafcab3d66f0ca81ea949a'
+    api_key = 'xxxxxxxxx'
     base_url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid=ccb23b78c0aafcab3d66f0ca81ea949a&units=metric'
     try:
         response = requests.get(base_url)
@@ -251,10 +225,7 @@ def main():
                 open_youtube()
             elif "close youtube" in command:
                 close_youtube()
-            elif "open genshin" in command:
-                open_genshin()
-            elif "close genshin" in command:
-                close_genshin_impact()
+           
             elif "open whatsapp" in command:
                 open_whatsapp()
             elif "close whatsapp" in command:
@@ -267,10 +238,7 @@ def main():
                 open_file_explorer()
             elif "open settings" in command:
                 open_settings()
-            elif "open cisco" in command:
-                open_cisco_packet_tracer()
-            elif "close cisco" in command:
-                close_cisco_packet_tracer()
+            
             elif "turn on bluetooth" in command:
                 turn_on_bluetooth()
             elif "turn off bluetooth" in command:
